@@ -1,466 +1,735 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>🍐 芭樂抽籤</title>
-<style>
-  /* 使用系統內建中文字型，iOS/macOS 有 PingFang，Windows 有 Microsoft JhengHei */
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>🍐 芭樂抽籤</title>
+  <style>
+    /* 使用系統內建中文字型，iOS/macOS 有 PingFang，Windows 有 Microsoft JhengHei */
 
-  :root {
-    --gold: #f5c842;
-    --red:  #c0392b;
-    --dark: #0d0a06;
-    --wood: #2a1a08;
-    --paper: #f5e6c8;
-    --ink:  #1a0a00;
-  }
+    :root {
+      --gold: #f5c842;
+      --red: #c0392b;
+      --dark: #0d0a06;
+      --wood: #2a1a08;
+      --paper: #f5e6c8;
+      --ink: #1a0a00;
+    }
 
-  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-  body {
-    background: var(--dark);
-    background-image:
-      radial-gradient(ellipse at 50% 0%, #3a1a0288 0%, transparent 60%),
-      repeating-linear-gradient(90deg, #ffffff04 0px, #ffffff04 1px, transparent 1px, transparent 60px);
-    min-height: 100dvh;
-    font-family: 'PingFang TC', 'Microsoft JhengHei', 'Noto Serif TC', serif;
-    color: #f0e0c0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    overflow-x: hidden;
-  }
+    body {
+      background: var(--dark);
+      background-image:
+        radial-gradient(ellipse at 50% 0%, #3a1a0288 0%, transparent 60%),
+        repeating-linear-gradient(90deg, #ffffff04 0px, #ffffff04 1px, transparent 1px, transparent 60px);
+      min-height: 100dvh;
+      font-family: 'PingFang TC', 'Microsoft JhengHei', 'Noto Serif TC', serif;
+      color: #f0e0c0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-x: hidden;
+    }
 
-  /* ── 音符跑馬燈 ── */
-  .ticker-wrap { width: 100%; overflow: hidden; background: #110a03; padding: 6px 0; flex-shrink: 0; }
-  .ticker-inner { display: inline-flex; gap: 32px; animation: ticker 18s linear infinite; white-space: nowrap; }
-  .ticker-inner span { font-size: 20px; opacity: .7; }
-  @keyframes ticker { from { transform: translateX(0) } to { transform: translateX(-50%) } }
+    /* ── 音符跑馬燈 ── */
+    .ticker-wrap {
+      width: 100%;
+      overflow: hidden;
+      background: #110a03;
+      padding: 6px 0;
+      flex-shrink: 0;
+    }
 
-  /* ── 標題 ── */
-  header { text-align: center; padding: 18px 12px 8px; }
-  header h1 { font-size: clamp(22px, 5vw, 40px); font-weight: 900; color: var(--gold);
-    text-shadow: 0 0 24px #f5c84288; letter-spacing: .1em; }
-  header p  { font-size: clamp(12px, 2.5vw, 16px); color: #c8a878; margin-top: 4px; }
+    .ticker-inner {
+      display: inline-flex;
+      gap: 32px;
+      animation: ticker 18s linear infinite;
+      white-space: nowrap;
+    }
 
-  /* ── 籤筒容器 ── */
-  .drum-section {
-    display: flex; flex-direction: column; align-items: center;
-    gap: 16px; padding: 10px 16px; flex: 1;
-  }
+    .ticker-inner span {
+      font-size: 20px;
+      opacity: .7;
+    }
 
-  /* 籤筒 */
-  .drum-wrap { position: relative; width: clamp(120px,25vw,180px); }
-  .drum {
-    width: 100%; aspect-ratio: 1/2.2;
-    background: linear-gradient(160deg, #7a4a14, #3d2008 50%, #6b3d10);
-    border-radius: 50% 50% 10% 10% / 12% 12% 6% 6%;
-    border: 3px solid #c8901a;
-    box-shadow: 0 0 30px #f5c84244, inset 0 0 20px #00000088;
-    position: relative; overflow: hidden; cursor: pointer;
-    transition: transform .15s;
-    display: flex; align-items: flex-start; justify-content: center; padding-top: 12%;
-  }
-  .drum::before {
-    content: '';
-    position: absolute; top: 0; left: 10%; right: 10%; height: 18%;
-    background: linear-gradient(180deg, #c8901a, #7a4a14);
-    border-bottom: 2px solid #f5c84288;
-    border-radius: 0 0 40% 40%;
-  }
-  .drum-label {
-    font-size: clamp(18px, 5vw, 32px); font-weight: 900;
-    color: var(--gold); text-shadow: 0 2px 8px #0008;
-    writing-mode: vertical-rl; letter-spacing: .2em;
-    position: relative; z-index: 1;
-  }
-  .drum:active { transform: scale(.96) rotate(-2deg); }
-  .drum.shaking { animation: shake .5s ease; }
-  @keyframes shake {
-    0%,100%{ transform: rotate(0) }
-    15%{ transform: rotate(-5deg) }
-    30%{ transform: rotate(5deg) }
-    45%{ transform: rotate(-4deg) }
-    60%{ transform: rotate(4deg) }
-    75%{ transform: rotate(-2deg) }
-    90%{ transform: rotate(2deg) }
-  }
+    @keyframes ticker {
+      from {
+        transform: translateX(0)
+      }
 
-  /* 價格標 */
-  .price-tag {
-    background: var(--red); color: #fff;
-    font-size: clamp(13px,3vw,18px); font-weight: 700;
-    padding: 4px 18px; border-radius: 999px;
-    letter-spacing: .1em; box-shadow: 0 2px 10px #c0392b66;
-  }
+      to {
+        transform: translateX(-50%)
+      }
+    }
 
-  /* 抽籤按鈕 */
-  .draw-btn {
-    background: linear-gradient(135deg, #c0392b, #8b1a1a);
-    color: #fff; font-family: 'Noto Serif TC', serif;
-    font-size: clamp(16px, 3.5vw, 24px); font-weight: 900;
-    border: none; border-radius: 999px;
-    padding: clamp(12px,2.5vw,18px) clamp(36px,6vw,60px);
-    cursor: pointer; letter-spacing: .2em;
-    box-shadow: 0 4px 24px #c0392b66, 0 0 0 2px #f5c84266;
-    transition: all .15s; -webkit-appearance: none;
-  }
-  .draw-btn:active { transform: scale(.95); box-shadow: 0 2px 8px #c0392b44; }
-  .draw-btn:disabled { opacity: .4; cursor: default; transform: none; }
+    /* ── 標題 ── */
+    header {
+      text-align: center;
+      padding: 18px 12px 8px;
+    }
 
-  /* ── 籤紙動畫 ── */
-  .slip-stage {
-    width: clamp(200px,50vw,320px); height: clamp(260px,40vh,360px);
-    position: relative; perspective: 800px;
-  }
-  .slip {
-    width: 100%; height: 100%;
-    position: absolute; top: 0; left: 0;
-    transform-style: preserve-3d;
-    border-radius: 8px 8px 40px 40px;
-    filter: drop-shadow(0 8px 32px #0008);
-  }
-  .slip.hidden { display: none; }
-  .slip-front, .slip-back {
-    position: absolute; inset: 0;
-    backface-visibility: hidden;
-    border-radius: inherit;
-  }
-  .slip-front {
-    background: linear-gradient(180deg, #e8d4b0 0%, #f5e6c8 40%, #e8d4b0 100%);
-    border: 2px solid #c8a878;
-    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
-  }
-  .slip-back {
-    background: linear-gradient(180deg, #c0392b 0%, #8b1a1a 100%);
-    border: 2px solid #f5c842;
-    transform: rotateY(180deg);
-    display: flex; align-items: center; justify-content: center;
-  }
-  .slip-back-text { color: var(--gold); font-size: clamp(20px,5vw,32px); font-weight: 900;
-    writing-mode: vertical-rl; letter-spacing: .3em; }
+    header h1 {
+      font-size: clamp(22px, 5vw, 40px);
+      font-weight: 900;
+      color: var(--gold);
+      text-shadow: 0 0 24px #f5c84288;
+      letter-spacing: .1em;
+    }
 
-  /* 籤紙内容（front） */
-  .slip-fortune { font-size: clamp(48px,14vw,90px); font-weight: 900; color: var(--red);
-    text-shadow: 2px 2px 0 #8b1a1a55; line-height: 1; }
-  .slip-guava   { font-size: clamp(24px,6vw,40px); letter-spacing: .1em; }
-  .slip-msg     { font-size: clamp(10px,2.5vw,14px); color: #5a3a1a; text-align: center;
-    padding: 0 16px; }
-  .slip-divider { width: 80%; height: 1px; background: #c8a87888; }
-  .slip-fortune.xiong { color: #2c3e50; text-shadow: 2px 2px 0 #00000033; }
+    header p {
+      font-size: clamp(12px, 2.5vw, 16px);
+      color: #c8a878;
+      margin-top: 4px;
+    }
 
-  /* 動畫 */
-  .slip.draw-in  { animation: drawIn .6s cubic-bezier(.22,1,.36,1) forwards; }
-  .slip.flip-in  { animation: flipReveal .7s cubic-bezier(.22,1,.36,1) forwards; }
-  @keyframes drawIn {
-    from { transform: translateY(60px) scale(.8); opacity: 0; }
-    to   { transform: translateY(0) scale(1); opacity: 1; }
-  }
-  @keyframes flipReveal {
-    0%   { transform: rotateY(0deg) }
-    50%  { transform: rotateY(90deg) }
-    100% { transform: rotateY(0deg) }
-  }
+    /* ── 籤筒容器 ── */
+    .drum-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      padding: 10px 16px;
+      flex: 1;
+    }
 
-  /* 粒子 */
-  .particles { position: fixed; inset: 0; pointer-events: none; z-index: 100; }
-  .p { position: absolute; border-radius: 50%;
-    animation: pfade 1.4s ease-out forwards; }
-  @keyframes pfade { to { transform: translateY(120px) scale(0); opacity: 0; } }
+    /* 籤筒 */
+    .drum-wrap {
+      position: relative;
+      width: clamp(120px, 25vw, 180px);
+    }
 
-  /* ── 機率說明 ── */
-  .odds-grid {
-    display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
-  }
-  .odds-card {
-    background: #ffffff0d; border: 1px solid #ffffff18;
-    border-radius: 12px; padding: 10px 16px; text-align: center; min-width: 80px;
-  }
-  .odds-card .name { font-size: clamp(13px,3vw,17px); font-weight: 700; }
-  .odds-card .name.daji  { color: #f5c842; }
-  .odds-card .name.xiaoji{ color: #90ee90; }
-  .odds-card .name.xiong { color: #888; }
-  .odds-card .guava { font-size: clamp(14px,3.5vw,18px); margin: 2px 0; }
-  .odds-card .pct   { font-size: 11px; color: #888; }
+    .drum {
+      width: 100%;
+      aspect-ratio: 1/2.2;
+      background: linear-gradient(160deg, #7a4a14, #3d2008 50%, #6b3d10);
+      border-radius: 50% 50% 10% 10% / 12% 12% 6% 6%;
+      border: 3px solid #c8901a;
+      box-shadow: 0 0 30px #f5c84244, inset 0 0 20px #00000088;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform .15s;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 12%;
+    }
 
-  /* ── 底部音樂播放器 ── */
-  .music-bar {
-    width: 100%; background: #0a0702;
-    border-top: 1px solid #3a2a0a;
-    padding: 8px 12px; display: flex; align-items: center; gap: 10px;
-    flex-shrink: 0; flex-wrap: wrap;
-  }
-  .music-bar input[type=file] { display: none; }
-  .music-bar label, .music-bar button {
-    background: #2a1a08; color: #c8a878;
-    border: 1px solid #5a3a10; border-radius: 8px;
-    padding: 6px 12px; font-size: clamp(12px,2.5vw,15px);
-    cursor: pointer; white-space: nowrap; font-family: inherit;
-    -webkit-appearance: none;
-  }
-  .music-bar label:active, .music-bar button:active { background: #3a2a10; }
-  .music-bar .track-name {
-    flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis;
-    white-space: nowrap; font-size: clamp(11px,2vw,13px); color: #7a6040;
-  }
+    .drum::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 10%;
+      right: 10%;
+      height: 18%;
+      background: linear-gradient(180deg, #c8901a, #7a4a14);
+      border-bottom: 2px solid #f5c84288;
+      border-radius: 0 0 40% 40%;
+    }
 
-  /* 統計 */
-  .stats {
-    display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;
-    font-size: clamp(11px,2.5vw,14px); color: #7a6040;
-  }
-  .stats span { background: #ffffff0a; padding: 4px 12px; border-radius: 999px; }
-</style>
+    .drum-label {
+      font-size: clamp(18px, 5vw, 32px);
+      font-weight: 900;
+      color: var(--gold);
+      text-shadow: 0 2px 8px #0008;
+      writing-mode: vertical-rl;
+      letter-spacing: .2em;
+      position: relative;
+      z-index: 1;
+    }
+
+    .drum:active {
+      transform: scale(.96) rotate(-2deg);
+    }
+
+    .drum.shaking {
+      animation: shake .5s ease;
+    }
+
+    @keyframes shake {
+
+      0%,
+      100% {
+        transform: rotate(0)
+      }
+
+      15% {
+        transform: rotate(-5deg)
+      }
+
+      30% {
+        transform: rotate(5deg)
+      }
+
+      45% {
+        transform: rotate(-4deg)
+      }
+
+      60% {
+        transform: rotate(4deg)
+      }
+
+      75% {
+        transform: rotate(-2deg)
+      }
+
+      90% {
+        transform: rotate(2deg)
+      }
+    }
+
+    /* 價格標 */
+    .price-tag {
+      background: var(--red);
+      color: #fff;
+      font-size: clamp(13px, 3vw, 18px);
+      font-weight: 700;
+      padding: 4px 18px;
+      border-radius: 999px;
+      letter-spacing: .1em;
+      box-shadow: 0 2px 10px #c0392b66;
+    }
+
+    /* 抽籤按鈕 */
+    .draw-btn {
+      background: linear-gradient(135deg, #c0392b, #8b1a1a);
+      color: #fff;
+      font-family: 'Noto Serif TC', serif;
+      font-size: clamp(16px, 3.5vw, 24px);
+      font-weight: 900;
+      border: none;
+      border-radius: 999px;
+      padding: clamp(12px, 2.5vw, 18px) clamp(36px, 6vw, 60px);
+      cursor: pointer;
+      letter-spacing: .2em;
+      box-shadow: 0 4px 24px #c0392b66, 0 0 0 2px #f5c84266;
+      transition: all .15s;
+      -webkit-appearance: none;
+    }
+
+    .draw-btn:active {
+      transform: scale(.95);
+      box-shadow: 0 2px 8px #c0392b44;
+    }
+
+    .draw-btn:disabled {
+      opacity: .4;
+      cursor: default;
+      transform: none;
+    }
+
+    /* ── 籤紙動畫 ── */
+    .slip-stage {
+      width: clamp(200px, 50vw, 320px);
+      height: clamp(260px, 40vh, 360px);
+      position: relative;
+      perspective: 800px;
+    }
+
+    .slip {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform-style: preserve-3d;
+      border-radius: 8px 8px 40px 40px;
+      filter: drop-shadow(0 8px 32px #0008);
+    }
+
+    .slip.hidden {
+      display: none;
+    }
+
+    .slip-front,
+    .slip-back {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      border-radius: inherit;
+    }
+
+    .slip-front {
+      background: linear-gradient(180deg, #e8d4b0 0%, #f5e6c8 40%, #e8d4b0 100%);
+      border: 2px solid #c8a878;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .slip-back {
+      background: linear-gradient(180deg, #c0392b 0%, #8b1a1a 100%);
+      border: 2px solid #f5c842;
+      transform: rotateY(180deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .slip-back-text {
+      color: var(--gold);
+      font-size: clamp(20px, 5vw, 32px);
+      font-weight: 900;
+      writing-mode: vertical-rl;
+      letter-spacing: .3em;
+    }
+
+    /* 籤紙内容（front） */
+    .slip-fortune {
+      font-size: clamp(48px, 14vw, 90px);
+      font-weight: 900;
+      color: var(--red);
+      text-shadow: 2px 2px 0 #8b1a1a55;
+      line-height: 1;
+    }
+
+    .slip-guava {
+      font-size: clamp(24px, 6vw, 40px);
+      letter-spacing: .1em;
+      text-align: center;
+      text-indent: .1em;
+    }
+
+    .slip-msg {
+      font-size: clamp(10px, 2.5vw, 14px);
+      color: #5a3a1a;
+      text-align: center;
+      padding: 0 16px;
+    }
+
+    .slip-divider {
+      width: 80%;
+      height: 1px;
+      background: #c8a87888;
+    }
+
+    .slip-fortune.xiong {
+      color: #2c3e50;
+      text-shadow: 2px 2px 0 #00000033;
+    }
+
+    /* 動畫 */
+    .slip.draw-in {
+      animation: drawIn .6s cubic-bezier(.22, 1, .36, 1) forwards;
+    }
+
+    .slip.flip-in {
+      animation: flipReveal .7s cubic-bezier(.22, 1, .36, 1) forwards;
+    }
+
+    @keyframes drawIn {
+      from {
+        transform: translateY(60px) scale(.8);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+    }
+
+    @keyframes flipReveal {
+      0% {
+        transform: rotateY(0deg)
+      }
+
+      50% {
+        transform: rotateY(90deg)
+      }
+
+      100% {
+        transform: rotateY(0deg)
+      }
+    }
+
+    /* 粒子 */
+    .particles {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    .p {
+      position: absolute;
+      border-radius: 50%;
+      animation: pfade 1.4s ease-out forwards;
+    }
+
+    @keyframes pfade {
+      to {
+        transform: translateY(120px) scale(0);
+        opacity: 0;
+      }
+    }
+
+    /* ── 機率說明 ── */
+    .odds-grid {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .odds-card {
+      background: #ffffff0d;
+      border: 1px solid #ffffff18;
+      border-radius: 12px;
+      padding: 10px 16px;
+      text-align: center;
+      min-width: 80px;
+    }
+
+    .odds-card .name {
+      font-size: clamp(13px, 3vw, 17px);
+      font-weight: 700;
+    }
+
+    .odds-card .name.daji {
+      color: #f5c842;
+    }
+
+    .odds-card .name.xiaoji {
+      color: #90ee90;
+    }
+
+    .odds-card .name.xiong {
+      color: #888;
+    }
+
+    .odds-card .guava {
+      font-size: clamp(14px, 3.5vw, 18px);
+      margin: 2px 0;
+    }
+
+    .odds-card .pct {
+      font-size: 11px;
+      color: #888;
+    }
+
+    /* ── 底部音樂播放器 ── */
+    .music-bar {
+      width: 100%;
+      background: #0a0702;
+      border-top: 1px solid #3a2a0a;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+      flex-wrap: wrap;
+    }
+
+    .music-bar input[type=file] {
+      display: none;
+    }
+
+    .music-bar label,
+    .music-bar button {
+      background: #2a1a08;
+      color: #c8a878;
+      border: 1px solid #5a3a10;
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: clamp(12px, 2.5vw, 15px);
+      cursor: pointer;
+      white-space: nowrap;
+      font-family: inherit;
+      -webkit-appearance: none;
+    }
+
+    .music-bar label:active,
+    .music-bar button:active {
+      background: #3a2a10;
+    }
+
+    .music-bar .track-name {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: clamp(11px, 2vw, 13px);
+      color: #7a6040;
+    }
+
+    /* 統計 */
+    .stats {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+      font-size: clamp(11px, 2.5vw, 14px);
+      color: #7a6040;
+    }
+
+    .stats span {
+      background: #ffffff0a;
+      padding: 4px 12px;
+      border-radius: 999px;
+    }
+  </style>
 </head>
+
 <body>
 
-<!-- 音符跑馬燈 -->
-<div class="ticker-wrap">
-  <div class="ticker-inner" id="ticker"></div>
-</div>
-
-<header>
-  <h1>🍐 芭樂抽籤 🍐</h1>
-  <p>抽一支籤，命運決定你的芭樂</p>
-</header>
-
-<div class="drum-section">
-  <div class="price-tag">💰 每抽 50 元</div>
-
-  <!-- 說明 -->
-  <div class="odds-grid">
-    <div class="odds-card">
-      <div class="name daji">大吉</div>
-      <div class="guava">🍐🍐</div>
-      <div class="pct">兩顆 · 30%</div>
-    </div>
-    <div class="odds-card">
-      <div class="name xiaoji">小吉</div>
-      <div class="guava">🍐🍐½</div>
-      <div class="pct">一顆半 · 50%</div>
-    </div>
-    <div class="odds-card">
-      <div class="name xiong">凶</div>
-      <div class="guava">🍐½</div>
-      <div class="pct">半顆 · 20%</div>
-    </div>
+  <!-- 音符跑馬燈 -->
+  <div class="ticker-wrap">
+    <div class="ticker-inner" id="ticker"></div>
   </div>
 
-  <!-- 籤紙顯示 -->
-  <div class="slip-stage">
-    <div class="slip hidden" id="slip">
-      <!-- 背面（抽出時先看到這面） -->
-      <div class="slip-back">
-        <span class="slip-back-text">芭樂籤</span>
+  <header>
+    <h1>🍐 芭樂抽籤 🍐</h1>
+    <p>抽一支籤，命運決定你的芭樂</p>
+  </header>
+
+  <div class="drum-section">
+    <div class="price-tag">💰 每抽 50 元</div>
+
+    <!-- 說明 -->
+    <div class="odds-grid">
+      <div class="odds-card">
+        <div class="name daji">大吉</div>
+        <div class="guava">🍐🍐</div>
+        <div class="pct">兩顆 · 30%</div>
       </div>
-      <!-- 正面（翻面後顯示） -->
-      <div class="slip-front" id="slipFront">
-        <div class="slip-fortune" id="slipFortune"></div>
-        <div class="slip-divider"></div>
-        <div class="slip-guava" id="slipGuava"></div>
-        <div class="slip-msg" id="slipMsg"></div>
+      <div class="odds-card">
+        <div class="name xiaoji">小吉</div>
+        <div class="guava">🍐🍐½</div>
+        <div class="pct">一顆半 · 50%</div>
+      </div>
+      <div class="odds-card">
+        <div class="name xiong">凶</div>
+        <div class="guava">🍐½</div>
+        <div class="pct">半顆 · 20%</div>
       </div>
     </div>
-  </div>
 
-  <!-- 籤筒 + 按鈕 -->
-  <div class="drum-wrap">
-    <div class="drum" id="drum" onclick="draw()">
-      <span class="drum-label">抽籤</span>
+    <!-- 籤紙顯示 -->
+    <div class="slip-stage">
+      <div class="slip hidden" id="slip">
+        <!-- 背面（抽出時先看到這面） -->
+        <div class="slip-back">
+          <span class="slip-back-text">芭樂籤</span>
+        </div>
+        <!-- 正面（翻面後顯示） -->
+        <div class="slip-front" id="slipFront">
+          <div class="slip-fortune" id="slipFortune"></div>
+          <div class="slip-divider"></div>
+          <div class="slip-guava" id="slipGuava"></div>
+          <div class="slip-msg" id="slipMsg"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 籤筒 + 按鈕 -->
+    <div class="drum-wrap">
+      <div class="drum" id="drum" onclick="draw()">
+        <span class="drum-label">抽籤</span>
+      </div>
+    </div>
+
+    <button class="draw-btn" id="drawBtn" onclick="draw()">✦ 抽一籤 ✦</button>
+
+    <!-- 統計 -->
+    <div class="stats">
+      <span id="statTotal">已抽：0次</span>
+      <span id="statDaji">大吉：0</span>
+      <span id="statXiaoji">小吉：0</span>
+      <span id="statXiong">凶：0</span>
     </div>
   </div>
 
-  <button class="draw-btn" id="drawBtn" onclick="draw()">✦ 抽一籤 ✦</button>
+  <!-- 粒子層 -->
+  <div class="particles" id="particles"></div>
 
-  <!-- 統計 -->
-  <div class="stats">
-    <span id="statTotal">已抽：0次</span>
-    <span id="statDaji">大吉：0</span>
-    <span id="statXiaoji">小吉：0</span>
-    <span id="statXiong">凶：0</span>
+  <!-- 音樂播放器 -->
+  <div class="music-bar">
+    <label for="musicFile">📁 載入音樂</label>
+    <input type="file" id="musicFile" accept="audio/*" multiple onchange="loadMusic(event)">
+    <button onclick="prevTrack()">⏮</button>
+    <button onclick="togglePlay()" id="playBtn">▶</button>
+    <button onclick="nextTrack()">⏭</button>
+    <span class="track-name" id="trackName">🎵 尚未載入音樂</span>
   </div>
-</div>
 
-<!-- 粒子層 -->
-<div class="particles" id="particles"></div>
+  <audio id="player" onended="nextTrack()"></audio>
 
-<!-- 音樂播放器 -->
-<div class="music-bar">
-  <label for="musicFile">📁 載入音樂</label>
-  <input type="file" id="musicFile" accept="audio/*" multiple onchange="loadMusic(event)">
-  <button onclick="prevTrack()">⏮</button>
-  <button onclick="togglePlay()" id="playBtn">▶</button>
-  <button onclick="nextTrack()">⏭</button>
-  <span class="track-name" id="trackName">🎵 尚未載入音樂</span>
-</div>
+  <script>
+    // ── 籤的設定 ──────────────────────────────────────────────
+    const FORTUNES = [
+      { name: '大吉', guava: '🍐🍐', guavaText: '兩顆芭樂', msg: '大吉大利！福氣滿滿，芭樂兩顆帶回家！', prob: 0.30, cls: '' },
+      { name: '小吉', guava: '🍐🍐½', guavaText: '一顆半芭樂', msg: '小有吉祥，吃一顆半，甜甜蜜蜜！', prob: 0.50, cls: '' },
+      { name: '凶', guava: '🍐½', guavaText: '半顆芭樂', msg: '凶凶不打緊，半顆芭樂照樣香～', prob: 0.20, cls: 'xiong' },
+    ];
 
-<audio id="player" onended="nextTrack()"></audio>
+    // 輪盤抽樣
+    function roll() {
+      const r = Math.random();
+      let cum = 0;
+      for (const f of FORTUNES) { cum += f.prob; if (r < cum) return f; }
+      return FORTUNES[FORTUNES.length - 1];
+    }
 
-<script>
-// ── 籤的設定 ──────────────────────────────────────────────
-const FORTUNES = [
-  { name: '大吉', guava: '🍐🍐',   guavaText: '兩顆芭樂',   msg: '大吉大利！福氣滿滿，芭樂兩顆帶回家！', prob: 0.30, cls: '' },
-  { name: '小吉', guava: '🍐🍐½',  guavaText: '一顆半芭樂', msg: '小有吉祥，吃一顆半，甜甜蜜蜜！',         prob: 0.50, cls: '' },
-  { name: '凶',   guava: '🍐½',   guavaText: '半顆芭樂',  msg: '凶凶不打緊，半顆芭樂照樣香～',           prob: 0.20, cls: 'xiong' },
-];
+    // 統計
+    let counts = { total: 0, '大吉': 0, '小吉': 0, '凶': 0 };
 
-// 輪盤抽樣
-function roll() {
-  const r = Math.random();
-  let cum = 0;
-  for (const f of FORTUNES) { cum += f.prob; if (r < cum) return f; }
-  return FORTUNES[FORTUNES.length - 1];
-}
+    // ── 主要抽籤邏輯 ─────────────────────────────────────────
+    let busy = false;
 
-// 統計
-let counts = { total: 0, '大吉': 0, '小吉': 0, '兇': 0 };
+    function draw() {
+      if (busy) return;
+      busy = true;
+      const btn = document.getElementById('drawBtn');
+      const drum = document.getElementById('drum');
+      const slip = document.getElementById('slip');
+      btn.disabled = true;
 
-// ── 主要抽籤邏輯 ─────────────────────────────────────────
-let busy = false;
+      // 重置籤紙
+      slip.className = 'slip hidden';
+      slip.style.transform = '';
 
-function draw() {
-  if (busy) return;
-  busy = true;
-  const btn  = document.getElementById('drawBtn');
-  const drum = document.getElementById('drum');
-  const slip = document.getElementById('slip');
-  btn.disabled = true;
+      const result = roll();
 
-  // 重置籤紙
-  slip.className = 'slip hidden';
-  slip.style.transform = '';
-
-  const result = roll();
-
-  // 1. 籤筒搖晃
-  drum.classList.add('shaking');
-  setTimeout(() => {
-    drum.classList.remove('shaking');
-
-    // 2. 籤紙抽出
-    slip.classList.remove('hidden');
-    slip.classList.add('draw-in');
-
-    // 初始顯示背面
-    document.querySelector('.slip-front').style.display = 'none';
-    document.querySelector('.slip-back').style.display = 'flex';
-
-    setTimeout(() => {
-      // 3. 翻面顯示結果
-      slip.classList.remove('draw-in');
-
-      // 填入內容
-      const fortuneEl = document.getElementById('slipFortune');
-      fortuneEl.textContent = result.name;
-      fortuneEl.className   = 'slip-fortune ' + result.cls;
-      document.getElementById('slipGuava').textContent = result.guava + '  ' + result.guavaText;
-      document.getElementById('slipMsg').textContent   = result.msg;
-
-      // 翻面
-      document.querySelector('.slip-back').style.display  = 'none';
-      document.querySelector('.slip-front').style.display = 'flex';
-
-      slip.classList.add('flip-in');
-
-      // 粒子
-      const pColor = result.name === '大吉' ? '#f5c842' : result.name === '小吉' ? '#90ee90' : '#888888';
-      burst(pColor);
-
-      // 統計
-      counts.total++;
-      counts[result.name]++;
-      updateStats();
-
+      // 1. 籤筒搖晃
+      drum.classList.add('shaking');
       setTimeout(() => {
-        slip.classList.remove('flip-in');
-        btn.disabled = false;
-        busy = false;
-      }, 800);
+        drum.classList.remove('shaking');
 
-    }, 700); // 翻面延遲
-  }, 550); // 搖晃結束
-}
+        // 2. 籤紙抽出
+        slip.classList.remove('hidden');
+        slip.classList.add('draw-in');
 
-function updateStats() {
-  document.getElementById('statTotal').textContent  = `已抽：${counts.total}次`;
-  document.getElementById('statDaji').textContent   = `大吉：${counts['大吉']}`;
-  document.getElementById('statXiaoji').textContent = `小吉：${counts['小吉']}`;
-  document.getElementById('statXiong').textContent  = `凶 ：${counts['凶']}`;
-}
+        // 初始顯示背面
+        document.querySelector('.slip-front').style.display = 'none';
+        document.querySelector('.slip-back').style.display = 'flex';
 
-// ── 粒子 ─────────────────────────────────────────────────
-function burst(color) {
-  const layer = document.getElementById('particles');
-  for (let i = 0; i < 28; i++) {
-    const p = document.createElement('div');
-    p.className = 'p';
-    const size = 6 + Math.random() * 10;
-    p.style.cssText = `
+        setTimeout(() => {
+          // 3. 翻面顯示結果
+          slip.classList.remove('draw-in');
+
+          // 填入內容
+          const fortuneEl = document.getElementById('slipFortune');
+          fortuneEl.textContent = result.name;
+          fortuneEl.className = 'slip-fortune ' + result.cls;
+          document.getElementById('slipGuava').textContent = result.guava + '  ' + result.guavaText;
+          document.getElementById('slipMsg').textContent = result.msg;
+
+          // 翻面
+          document.querySelector('.slip-back').style.display = 'none';
+          document.querySelector('.slip-front').style.display = 'flex';
+
+          slip.classList.add('flip-in');
+
+          // 粒子
+          const pColor = result.name === '大吉' ? '#f5c842' : result.name === '小吉' ? '#90ee90' : '#888888';
+          burst(pColor);
+
+          // 統計
+          counts.total++;
+          counts[result.name]++;
+          updateStats();
+
+          setTimeout(() => {
+            slip.classList.remove('flip-in');
+            btn.disabled = false;
+            busy = false;
+          }, 800);
+
+        }, 700); // 翻面延遲
+      }, 550); // 搖晃結束
+    }
+
+    function updateStats() {
+      document.getElementById('statTotal').textContent = `已抽：${counts.total}次`;
+      document.getElementById('statDaji').textContent = `大吉：${counts['大吉']}`;
+      document.getElementById('statXiaoji').textContent = `小吉：${counts['小吉']}`;
+      document.getElementById('statXiong').textContent = `凶：${counts['凶']}`;
+    }
+
+    // ── 粒子 ─────────────────────────────────────────────────
+    function burst(color) {
+      const layer = document.getElementById('particles');
+      for (let i = 0; i < 28; i++) {
+        const p = document.createElement('div');
+        p.className = 'p';
+        const size = 6 + Math.random() * 10;
+        p.style.cssText = `
       width:${size}px; height:${size}px;
       background:${color};
-      left:${20 + Math.random()*60}%;
-      top:${10 + Math.random()*60}%;
-      animation-duration:${1 + Math.random()*0.8}s;
-      animation-delay:${Math.random()*0.3}s;
-      transform: translate(${(Math.random()-0.5)*200}px, ${-50 - Math.random()*150}px);
+      left:${20 + Math.random() * 60}%;
+      top:${10 + Math.random() * 60}%;
+      animation-duration:${1 + Math.random() * 0.8}s;
+      animation-delay:${Math.random() * 0.3}s;
+      transform: translate(${(Math.random() - 0.5) * 200}px, ${-50 - Math.random() * 150}px);
     `;
-    layer.appendChild(p);
-    p.addEventListener('animationend', () => p.remove());
-  }
-}
+        layer.appendChild(p);
+        p.addEventListener('animationend', () => p.remove());
+      }
+    }
 
-// ── 跑馬燈 ───────────────────────────────────────────────
-const NOTES = '🎙️🥁💰🎉💰🥁🎙️♠️♥️♦️♟️♣️';
-const ticker = document.getElementById('ticker');
-const tickerContent = Array.from({length:40}, () =>
-  `<span>${NOTES[Math.floor(Math.random()*NOTES.length)]}</span>`
-).join('');
-ticker.innerHTML = tickerContent + tickerContent; // 重複一遍讓動畫無縫
+    // ── 跑馬燈 ───────────────────────────────────────────────
+    const NOTES = '🎸🎵🎶🥁🎷🎺🎻🎤🎼✨🌟';
+    const ticker = document.getElementById('ticker');
+    const tickerContent = Array.from({ length: 40 }, () =>
+      `<span>${NOTES[Math.floor(Math.random() * NOTES.length)]}</span>`
+    ).join('');
+    ticker.innerHTML = tickerContent + tickerContent; // 重複一遍讓動畫無縫
 
-// ── 音樂播放器 ───────────────────────────────────────────
-let playlist = [];
-let currentIdx = -1;
-const player = document.getElementById('player');
-const playBtn = document.getElementById('playBtn');
-const trackName = document.getElementById('trackName');
+    // ── 音樂播放器 ───────────────────────────────────────────
+    let playlist = [];
+    let currentIdx = -1;
+    const player = document.getElementById('player');
+    const playBtn = document.getElementById('playBtn');
+    const trackName = document.getElementById('trackName');
 
-function loadMusic(e) {
-  const files = Array.from(e.target.files);
-  files.forEach(f => {
-    playlist.push({ name: f.name, url: URL.createObjectURL(f) });
-  });
-  if (currentIdx === -1 && playlist.length) {
-    currentIdx = 0;
-    playTrack();
-  }
-}
+    function loadMusic(e) {
+      const files = Array.from(e.target.files);
+      files.forEach(f => {
+        playlist.push({ name: f.name, url: URL.createObjectURL(f) });
+      });
+      if (currentIdx === -1 && playlist.length) {
+        currentIdx = 0;
+        playTrack();
+      }
+    }
 
-function playTrack() {
-  if (!playlist.length) return;
-  player.src = playlist[currentIdx].url;
-  player.play();
-  playBtn.textContent = '⏸';
-  trackName.textContent = '▶ ' + playlist[currentIdx].name;
-}
+    function playTrack() {
+      if (!playlist.length) return;
+      player.src = playlist[currentIdx].url;
+      player.play();
+      playBtn.textContent = '⏸';
+      trackName.textContent = '▶ ' + playlist[currentIdx].name;
+    }
 
-function togglePlay() {
-  if (!playlist.length) return;
-  if (player.paused) { player.play(); playBtn.textContent = '⏸'; }
-  else               { player.pause(); playBtn.textContent = '▶'; }
-}
+    function togglePlay() {
+      if (!playlist.length) return;
+      if (player.paused) { player.play(); playBtn.textContent = '⏸'; }
+      else { player.pause(); playBtn.textContent = '▶'; }
+    }
 
-function nextTrack() {
-  if (!playlist.length) return;
-  currentIdx = (currentIdx + 1) % playlist.length;
-  playTrack();
-}
+    function nextTrack() {
+      if (!playlist.length) return;
+      currentIdx = (currentIdx + 1) % playlist.length;
+      playTrack();
+    }
 
-function prevTrack() {
-  if (!playlist.length) return;
-  currentIdx = (currentIdx - 1 + playlist.length) % playlist.length;
-  playTrack();
-}
-</script>
+    function prevTrack() {
+      if (!playlist.length) return;
+      currentIdx = (currentIdx - 1 + playlist.length) % playlist.length;
+      playTrack();
+    }
+  </script>
 </body>
+
 </html>
